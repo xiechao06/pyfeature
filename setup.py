@@ -21,7 +21,7 @@ setup(
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
     license="MIT",
-    packages=find_packages(),
+    py_modules=["pyfeature"],
     include_package_data=True,
     zip_safe=False,
     install_requires=["twill>=0.9"],
