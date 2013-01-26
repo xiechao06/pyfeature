@@ -256,11 +256,11 @@ def flask_sqlalchemy_setup(app, db, create_step_prefix=u"create a "):
             try:
                 __hinter__ = kwargs.pop("__hinter__")
             except KeyError:
-                __hinter__ = "\((?P<name>.+)\)"
+                __hinter__ = "\s*\((?P<name>.+)\)"
             if __hinter__:
                 m = re.match(__hinter__, desc)
                 if m:
-                    args = m.groups() + args
+                    kwargs.update(m.groupdict())
             try:
                 model = _models_dict[model_name] 
                 ret = model(*args, **kwargs)
