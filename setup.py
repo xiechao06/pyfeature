@@ -25,5 +25,6 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=["twill>=0.9"],
+    scripts=['scripts/pyfeature_step_gen.py', 'scripts/pyfeature_reader.py']
 )
 
