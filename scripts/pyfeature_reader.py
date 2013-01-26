@@ -9,9 +9,9 @@ import sys
 import re
 
 if __name__ == "__main__":
-    pattern_feature = re.compile(u'.*with Feature\(u?("|\')(.+)("|\')\)')
+    pattern_feature = re.compile(u'.*with Feature\(u?("|\')(.+)("|\').*\)')
     pattern_scenario = re.compile(u'.*with Scenario\(u?("|\')(.+)("|\')\)')
-    pattern_step = re.compile(u'.*(given|and_|when|then)\(u?("|\')(.+)("|\').*\)')
+    pattern_step = re.compile(u'.*(given|and_|when|then)\(u?("|\')(.+)("|\').*')
     for l in sys.stdin.xreadlines():
         m = pattern_feature.match(l)
         if m:
