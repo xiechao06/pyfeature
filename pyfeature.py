@@ -219,13 +219,17 @@ class _Step(object):
         self.feature = feature
         self.senario = senario
 
-def flask_sqlalchemy_setup(app, db):
+def flask_sqlalchemy_setup(app, db, create_step_prefix=u"create a "):
     import re
     import tempfile
     import os
     import mock
 
-    patcher = mock.patch.dict(app.__dict__, {"teardown_appcontext_funcs": [f for f in app.teardown_appcontext_funcs if f.__module__ != "flask_sqlalchemy"]})
+    
+    # avoid remove db session after each Flask.test_request_context context
+    patcher = mock.patch.dict(app.__dict__, 
+                              {"teardown_appcontext_funcs": 
+                               [f for f in app.teardown_appcontext_funcs if f.__module__ != "flask_sqlalchemy"]})
 
     @before_each_feature
     def setup(feature):
@@ -234,8 +238,7 @@ def flask_sqlalchemy_setup(app, db):
         app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + db_fname
         try:
             db.init_app(app)
-        except AssertionError:  # 这是因为flask禁止在一次请求之后再次init_app, 而
-                                # 这是不可避免的
+        except AssertionError:  # flask-sqlalchemy forbid init_app more than once
             pass 
         db.create_all()
         feature.db = db
@@ -248,14 +251,8 @@ def flask_sqlalchemy_setup(app, db):
             except AttributeError:
                 _models_dict[model.__name__] = model
 
-        @step(u"create a (\w+)(.*)")
-        @step(u"创建(\w+)(.*)")
+        @step(create_step_prefix+u"(\w+)(.*)")
         def _(step, model_name, desc, *args, **kwargs):
-            """
-            特别注意__hinter__这里的写法, 若不加"()", 那么"创建ProductType"就
-            包含两种含义, 创建一个名字是Type的Product(Product是model类), 
-            创建一个ProductType(ProductType是model类)
-            """
             try:
                 __hinter__ = kwargs.pop("__hinter__")
             except KeyError:
