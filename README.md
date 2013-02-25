@@ -7,7 +7,7 @@ pyfeature let you:
 
  * write specifications/acceptance auto test in python
  * one step file for one feature (of course, you could reuse the step files at will).
- * some utilities to help you write acceptance auto test more easily.
+ * some utilities to help you write acceptance auto test more easily. For example, set up create steps from models automatically!
 
 ## Tutorial
 
@@ -24,7 +24,7 @@ $ pip install mock # you needn't to install it to use pyfeature, except when run
 
 ```
 # -*- coding: utf-8 -*-
-"""
+"""yi xia
 sample_feature.py
 """
 from pyfeature import (Feature, Scenario, given, and_, when, then)
@@ -124,6 +124,8 @@ Feature: test handsome boy
 ### implement your step file
 
 ...
+
+ENJOY IT!
 
 
 
