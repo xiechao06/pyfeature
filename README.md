@@ -24,7 +24,7 @@ $ pip install mock # you needn't to install it to use pyfeature, except when run
 
 ```
 # -*- coding: utf-8 -*-
-"""yi xia
+"""
 sample_feature.py
 """
 from pyfeature import (Feature, Scenario, given, and_, when, then)
