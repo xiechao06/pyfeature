@@ -120,12 +120,12 @@ class _Feature(object):
             print s
 
     def exec_step(self, step, desc, *args, **kwargs):
-        self.print_(u"\t\t" + step.name + ": " + desc)
-        self.print_(u"\t\t\t# * arguments:")
+        self.print_("\t\t" + step.name + ": " + desc)
+        self.print_("\t\t\t# * arguments:")
         for arg in args:
-            self.print_(u"\t\t\t#   - %s" % repr(arg).decode("utf-8"))
+            self.print_("\t\t\t#   - %s" % repr(arg).decode("utf-8"))
         for k, v in kwargs.items():
-            self.print_(u"\t\t\t#   - %s=%s" % (k, repr(v).decode("utf-8")))
+            self.print_("\t\t\t#   - %s=%s" % (k, v))
         for pattern_, step_func in _feature.pattern2step.items():
             pattern_ = re.compile(pattern_)
             m = pattern_.match(desc)
@@ -133,7 +133,7 @@ class _Feature(object):
                 args = m.groups() + args
                 break
         else:
-            raise (NotImplementedError(), u"no function map to " + desc)
+            raise (NotImplementedError(), "no function map to " + desc)
 
         try:
             return step_func(step, *args, **kwargs)
