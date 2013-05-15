@@ -129,7 +129,7 @@ class _Feature(object):
             self.print_("\t\t\t#   - %s=%s" % (k, v))
 
         for pattern_, step_func in _feature.pattern2step.items():
-            pattern_ = re.compile(pattern_)
+            pattern_ = re.compile(pattern_, flags=re.UNICODE)
             m = pattern_.match(desc)
             if m:
                 args = m.groups() + args
@@ -221,7 +221,11 @@ class _Step(object):
         self.feature = feature
         self.senario = senario
 
-def flask_sqlalchemy_setup(app, db, create_step_prefix=u"create a "):
+def flask_sqlalchemy_setup(app, db, create_step_prefix=u"create a ", 
+                           model_name_getter=lambda model: model.__name__, 
+                           attr_name_getter=lambda model, attr_name: attr_name,
+                           set_step_pattern=u'(\w+)([\.\w+]+) set to (.+)',
+                           test_step_pattern=u'(\w+)([\.\w+]+) is (.+)'):
     import re
     import tempfile
     import os
@@ -248,10 +252,7 @@ def flask_sqlalchemy_setup(app, db, create_step_prefix=u"create a "):
 
         _models_dict = {}
         for model in db.Model.__subclasses__():
-            try:
-                _models_dict[model.__label__] = model
-            except AttributeError:
-                _models_dict[model.__name__] = model
+            _models_dict[model_name_getter(model)] = model
 
         @step(create_step_prefix+u"(\w+)(.*)")
         def _(step, model_name, desc, *args, **kwargs):
@@ -272,9 +273,10 @@ def flask_sqlalchemy_setup(app, db, create_step_prefix=u"create a "):
             except KeyError, e:
                 raise NotImplementedError()
 
-        @step(u'(\w+)([\.\w+]+) set to (.+)')
-        def _(step, model, attr, v, obj, *args, **kwargs): 
-            attr = attr[1:].split('.')
+        @step(set_step_pattern)
+        def _(step, model_name, attr, v, obj, *args, **kwargs): 
+            model = _models_dict[model_name]
+            attr = [attr_name_getter(model, i) for i in attr[1:].split('.')]
             try: 
                 v = eval(v)
             except NameError:
@@ -286,14 +288,16 @@ def flask_sqlalchemy_setup(app, db, create_step_prefix=u"create a "):
                 setattr(obj, attr[0], v)
             db.session.commit()
 
-        @step(u'(\w+)([\.\w+]+) is (.+)')
-        def _(step, model, attr, v, obj, *args, **kwargs): 
+        @step(test_step_pattern)
+        def _(step, model_name, attr, v, obj, *args, **kwargs): 
+            model = _models_dict[model_name]
+            attr = [attr_name_getter(model, i) for i in attr[1:].split('.')]
             try: 
                 v = eval(v)
             except NameError:
                 v = kwargs[v]
 
-            assert operator.attrgetter(attr[1:])(obj) == v
+            assert operator.attrgetter(".".join(attr))(obj) == v
 
         patcher.start()
 
