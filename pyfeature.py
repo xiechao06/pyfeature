@@ -7,6 +7,7 @@ __author_email__ = "xiechao06@gmail.com"
 __version__ = "0.9.0"
 
 import StringIO
+import operator
 from functools import partial, wraps
 from contextlib import contextmanager
 import re
@@ -123,9 +124,10 @@ class _Feature(object):
         self.print_("\t\t" + step.name + ": " + desc)
         self.print_("\t\t\t# * arguments:")
         for arg in args:
-            self.print_("\t\t\t#   - %s" % repr(arg).decode("utf-8"))
+            self.print_(u"\t\t\t#   - %s" % arg)
         for k, v in kwargs.items():
             self.print_("\t\t\t#   - %s=%s" % (k, v))
+
         for pattern_, step_func in _feature.pattern2step.items():
             pattern_ = re.compile(pattern_)
             m = pattern_.match(desc)
@@ -269,6 +271,29 @@ def flask_sqlalchemy_setup(app, db, create_step_prefix=u"create a "):
                 return ret
             except KeyError, e:
                 raise NotImplementedError()
+
+        @step(u'(\w+)([\.\w+]+) set to (.+)')
+        def _(step, model, attr, v, obj, *args, **kwargs): 
+            attr = attr[1:].split('.')
+            try: 
+                v = eval(v)
+            except NameError:
+                v = kwargs[v]
+
+            if attr[:-1]:
+                setattr(operator.attrgetter('.'.join(attr[:-1]))(obj), attr[-1], v)
+            else: 
+                setattr(obj, attr[0], v)
+            db.session.commit()
+
+        @step(u'(\w+)([\.\w+]+) is (.+)')
+        def _(step, model, attr, v, obj, *args, **kwargs): 
+            try: 
+                v = eval(v)
+            except NameError:
+                v = kwargs[v]
+
+            assert operator.attrgetter(attr[1:])(obj) == v
 
         patcher.start()
 
