@@ -2,9 +2,6 @@
 """
 pyfeature
 """
-__author__ = "xiechao"
-__author_email__ = "xiechao06@gmail.com"
-__version__ = "0.9.0"
 
 import StringIO
 import operator

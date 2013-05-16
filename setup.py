@@ -7,11 +7,11 @@ import os.path
 PACKAGE = "pyfeature"
 NAME = "pyfeature"
 DESCRIPTION = "Inspired by lettuce, but be more pythonic!"
-AUTHOR = __import__(PACKAGE).__author__
-AUTHOR_EMAIL = __import__(PACKAGE).__author_email__
+AUTHOR = "xiechao"
+AUTHOR_EMAIL = "xiechao06@gmail.com"
+VERSION = "0.9.0"
 URL = ""
-VERSION = __import__(PACKAGE).__version__
-DOC = __import__(PACKAGE).__doc__
+DOC = __doc__
 
 setup(
     name=NAME,
