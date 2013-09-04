@@ -35,7 +35,7 @@ if __name__ == "__main__":
                     omit_next_token = False
             
     for step in steps:
-        print '@step(%s)' % step[0]
+        print '@step(%s$)' % step[0]
         print 'def _(%s):' % (', '.join(t.strip() for t in ["step"] + step[1:] if t.strip()) if len(step) > 1 else "")
         print '    pass'
         print ""
