@@ -11,6 +11,7 @@ import re
 import twill
 import types
 import sys
+from collections import OrderedDict
 
 class Twill(object):
     """
@@ -111,7 +112,7 @@ class _Feature(object):
     def __init__(self, name, verbose):
         self.name = name
         self.__verbose = verbose
-        self.pattern2step = {}
+        self.pattern2step = OrderedDict()
 
     def print_(self, s):
         if self.__verbose:
@@ -125,7 +126,7 @@ class _Feature(object):
         for k, v in kwargs.items():
             self.print_("\t\t\t#   - %s=%s" % (k, v))
 
-        for pattern_, step_func in _feature.pattern2step.items():
+        for pattern_, step_func in reversed(_feature.pattern2step.items()):
             pattern_ = re.compile(pattern_, flags=re.UNICODE)
             m = pattern_.match(desc)
             if m:
