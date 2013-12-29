@@ -13,7 +13,6 @@ if __name__ == "__main__":
     steps = [] 
     print "# -*- coding: UTF-8 -*-"
     print "from pyfeature import step"
-    print ""
     for l in sys.stdin.xreadlines():
         m = pattern.match(l)
         if m:
@@ -34,9 +33,9 @@ if __name__ == "__main__":
                 else:
                     omit_next_token = False
             
-    for step in steps:
-        print '@step(%s$)' % step[0]
-        print 'def _(%s):' % (', '.join(t.strip() for t in ["step"] + step[1:] if t.strip()) if len(step) > 1 else "")
+    for i in xrange(len(steps)):
+        step = steps[i]
+        print '\n\n@step(\'%s$\')' % step[0].strip('\'"')
+        print 'def _%d(%s):' % (i, ', '.join(t.strip() for t in ["step"] + step[1:] if t.strip()) if len(step) > 1 else "")
         print '    pass'
-        print ""
 
